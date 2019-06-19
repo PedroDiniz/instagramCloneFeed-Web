@@ -1,40 +1,52 @@
-import React, { Component } from "react";
-import api from "../../services/api";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import api from '../../services/api';
 
-import { Container, Input, Btn } from "./styles";
+import { Container, Input, Btn } from './styles';
 
 export default class New extends Component {
+  static propTypes = {
+    history: PropTypes.func.isRequired,
+  };
+
   state = {
     image: null,
-    author: "",
-    place: "",
-    description: "",
-    hashtags: ""
+    author: '',
+    place: '',
+    description: '',
+    hashtags: '',
   };
 
-  handleSubmit = async e => {
+  handleSubmit = async (e) => {
+    const { history } = this.props;
     e.preventDefault();
     const data = new FormData();
-    data.append("image", this.state.image);
-    data.append("author", this.state.author);
-    data.append("place", this.state.place);
-    data.append("description", this.state.description);
-    data.append("hashtags", this.state.hashtags);
+    const {
+      image, author, place, description, hashtags,
+    } = this.state;
+    data.append('image', image);
+    data.append('author', author);
+    data.append('place', place);
+    data.append('description', description);
+    data.append('hashtags', hashtags);
 
-    await api.post("posts", data);
+    await api.post('posts', data);
 
-    this.props.history.push("/");
+    history.push('/');
   };
 
-  handleImageChange = e => {
+  handleImageChange = (e) => {
     this.setState({ image: e.target.files[0] });
   };
 
-  handleChange = e => {
+  handleChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
 
   render() {
+    const {
+      author, place, description, hashtags,
+    } = this.state;
     return (
       <Container onSubmit={this.handleSubmit}>
         <Input type="file" onChange={this.handleImageChange} />
@@ -43,28 +55,28 @@ export default class New extends Component {
           name="author"
           placeholder="Autor do post"
           onChange={this.handleChange}
-          value={this.state.author}
+          value={author}
         />
         <Input
           type="text"
           name="place"
           placeholder="Local do post"
           onChange={this.handleChange}
-          value={this.state.place}
+          value={place}
         />
         <Input
           type="text"
           name="description"
           placeholder="Descrição do post"
           onChange={this.handleChange}
-          value={this.state.description}
+          value={description}
         />
         <Input
           type="text"
           name="hashtags"
           placeholder="Hashtags do post"
           onChange={this.handleChange}
-          value={this.state.hashtags}
+          value={hashtags}
         />
         <Btn type="submit">Enviar</Btn>
       </Container>

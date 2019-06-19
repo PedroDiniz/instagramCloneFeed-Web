@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import api from "../../services/api";
-import io from "socket.io-client";
+import React, { Component } from 'react';
+import io from 'socket.io-client';
+import api from '../../services/api';
 
 import {
   Container,
@@ -16,47 +16,47 @@ import {
   Strong,
   P,
   Hashtags,
-  Btn
-} from "./styles";
-import more from "../../assets/more.svg";
-import like from "../../assets/like.svg";
-import comment from "../../assets/comment.svg";
-import send from "../../assets/send.svg";
+  Btn,
+} from './styles';
+import more from '../../assets/more.svg';
+import like from '../../assets/like.svg';
+import comment from '../../assets/comment.svg';
+import send from '../../assets/send.svg';
 
 class Feed extends Component {
   state = {
-    feed: []
+    feed: [],
   };
 
   async componentDidMount() {
     this.registerToSocket();
-    const response = await api.get("getposts");
+    const response = await api.get('getposts');
 
     this.setState({ feed: response.data });
   }
 
   registerToSocket = () => {
-    const socket = io("http://localhost:3333");
-    socket.on("post", newPost => {
-      this.setState({ feed: [newPost, ...this.state.feed] });
+    const { feed } = this.state;
+    const socket = io('http://localhost:3333');
+    socket.on('post', (newPost) => {
+      this.setState({ feed: [newPost, ...feed] });
     });
-    socket.on("like", newLike => {
+    socket.on('like', (newLike) => {
       this.setState({
-        feed: this.state.feed.map(post =>
-          post._id === newLike._id ? newLike : post
-        )
+        feed: feed.map(post => (post._id === newLike._id ? newLike : post)),
       });
     });
   };
 
-  handleLike = async id => {
+  handleLike = async (id) => {
     await api.post(`/post/${id}/like`);
   };
 
   render() {
+    const { feed } = this.state;
     return (
       <Container>
-        {this.state.feed.map(post => (
+        {feed.map(post => (
           <Article key={post._id}>
             <Header>
               <UserInfo>
@@ -74,7 +74,10 @@ class Feed extends Component {
                 <Img src={comment} alt="" />
                 <Img src={send} alt="" />
               </Actions>
-              <Strong>{post.likes} curtidas</Strong>
+              <Strong>
+                {post.likes}
+                curtidas
+              </Strong>
               <P>
                 {post.description}
                 <Hashtags>{post.Hashtags}</Hashtags>
